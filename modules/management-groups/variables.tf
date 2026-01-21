@@ -5,7 +5,7 @@ variable "name" {
 }
 
 variable "display_name" {
-  description = "Management group display name" 
+  description = "Management group display name"
   type        = string
 }
 
