@@ -45,3 +45,52 @@ module "landingzones" {
   parent_id    = module.alz_root.id
 }
 
+
+# --- Platform children ---
+
+module "identity" {
+  source       = "../../modules/management-groups"
+  name         = "identity"
+  display_name = "Identity"
+  parent_id    = module.platform.id
+}
+
+module "connectivity" {
+  source       = "../../modules/management-groups"
+  name         = "connectivity"
+  display_name = "Connectivity"
+  parent_id    = module.platform.id
+}
+
+module "management" {
+  source       = "../../modules/management-groups"
+  name         = "management"
+  display_name = "Management"
+  parent_id    = module.platform.id
+}
+
+module "security" {
+  source       = "../../modules/management-groups"
+  name         = "security"
+  display_name = "Security"
+  parent_id    = module.platform.id
+}
+
+
+# --- Landing Zones children ---
+
+module "lz_prod" {
+  source       = "../../modules/management-groups"
+  name         = "lz-prod" # MG ID (immutable); keep IDs lowercase/hyphenated
+  display_name = "Prod"
+  parent_id    = module.landingzones.id
+}
+
+module "lz_nonprod" {
+  source       = "../../modules/management-groups"
+  name         = "lz-nonprod"
+  display_name = "Non-Prod"
+  parent_id    = module.landingzones.id
+}
+
+
