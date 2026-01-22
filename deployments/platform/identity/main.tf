@@ -11,4 +11,19 @@ terraform {
 
 provider "azurerm" {
   features {}
+  subscription_id = var.subscription_id
+}
+
+module "identity_spoke_vnet" {
+  source              = "../../../modules/networking/vnet"
+  name                = "vnet-id-spk-ne"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  address_space       = ["10.101.0.0/24"]
+
+  subnets = {
+    snet-adds-ne = { address_prefixes = ["10.101.0.0/26"] }
+  }
+
+  tags = var.tags
 }
