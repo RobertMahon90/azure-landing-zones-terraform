@@ -6,7 +6,7 @@
 
 module "alz_root_policies" {
   source   = "../../modules/policies"
-  scope_id = module.alz_root.id  # AlzDemo MG
+  scope_id = module.alz_root.id # AlzDemo MG
 
   policy_assignments = {
 
