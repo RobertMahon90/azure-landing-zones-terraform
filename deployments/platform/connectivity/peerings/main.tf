@@ -117,38 +117,43 @@ data "terraform_remote_state" "lz_nonprod" {
 # Local identifiers + VNet IDs
 #############################
 
+
 locals {
-  # Hub identifiers
-  hub_rg   = "rg-vnet-hub-ne"
-  hub_vnet = "vnet-hub-ne"
+  # Hub values from hub deployment outputs
+  hub_rg      = data.terraform_remote_state.hub.outputs.resource_group_name
+  hub_vnet    = data.terraform_remote_state.hub.outputs.vnet_name
+  hub_vnet_id = data.terraform_remote_state.hub.outputs.vnet_id
 
-  # Spoke identifiers
-  id_rg   = "rg-vnet-id-ne"
-  id_vnet = "vnet-id-spk-ne"
+  # Identity values from identity deployment outputs
+  id_rg      = data.terraform_remote_state.identity.outputs.resource_group_name
+  id_vnet    = data.terraform_remote_state.identity.outputs.vnet_name
+  id_vnet_id = data.terraform_remote_state.identity.outputs.vnet_id
 
-  mgmt_rg   = "rg-vnet-mgmt-ne"
-  mgmt_vnet = "vnet-mgmt-spk-ne"
-
-  sec_rg   = "rg-vnet-sec-ne"
-  sec_vnet = "vnet-sec-spk-ne"
-
-  prd_rg   = "rg-vnet-prd-ne"
-  prd_vnet = "vnet-prd-spk-ne"
-
-  nprd_rg   = "rg-vnet-nprd-ne"
-  nprd_vnet = "vnet-nprod-spk-ne"
-
-  # VNet IDs from remote state outputs (these exist because your VNet module outputs vnet_id)
-  hub_vnet_id  = data.terraform_remote_state.hub.outputs.vnet_id
-  id_vnet_id   = data.terraform_remote_state.identity.outputs.vnet_id
+  # Management values from management deployment outputs
+  mgmt_rg      = data.terraform_remote_state.management.outputs.resource_group_name
+  mgmt_vnet    = data.terraform_remote_state.management.outputs.vnet_name
   mgmt_vnet_id = data.terraform_remote_state.management.outputs.vnet_id
-  sec_vnet_id  = data.terraform_remote_state.security.outputs.vnet_id
-  prd_vnet_id  = data.terraform_remote_state.lz_prod.outputs.vnet_id
+
+  # Security values from security deployment outputs
+  sec_rg      = data.terraform_remote_state.security.outputs.resource_group_name
+  sec_vnet    = data.terraform_remote_state.security.outputs.vnet_name
+  sec_vnet_id = data.terraform_remote_state.security.outputs.vnet_id
+
+  # Prod values from lz-prod deployment outputs
+  prd_rg      = data.terraform_remote_state.lz_prod.outputs.resource_group_name
+  prd_vnet    = data.terraform_remote_state.lz_prod.outputs.vnet_name
+  prd_vnet_id = data.terraform_remote_state.lz_prod.outputs.vnet_id
+
+  # Non-Prod values from lz-nonprod deployment outputs
+  nprd_rg      = data.terraform_remote_state.lz_nonprod.outputs.resource_group_name
+  nprd_vnet    = data.terraform_remote_state.lz_nonprod.outputs.vnet_name
   nprd_vnet_id = data.terraform_remote_state.lz_nonprod.outputs.vnet_id
 
+  # Gateway transit behaviour
   allow_gateway_transit = var.enable_gateway_transit
   use_remote_gateways   = var.enable_gateway_transit
 }
+
 
 #############################
 # Peerings (Hub <-> Spokes) with gateway transit enabled
