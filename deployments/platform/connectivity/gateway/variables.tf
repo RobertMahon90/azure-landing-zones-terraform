@@ -1,0 +1,95 @@
+
+############################################
+# Subscription and location
+############################################
+
+variable "subscription_id" {
+  type        = string
+  description = "Connectivity subscription ID (injected by pipeline later)"
+}
+
+variable "location" {
+  type        = string
+  description = "Azure region"
+  default     = "northeurope"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Common tags"
+  default     = {}
+}
+
+############################################
+# Remote state backend (hub connectivity layer)
+############################################
+
+variable "tfstate_resource_group_name" {
+  type        = string
+  description = "Resource group containing the Terraform state storage account"
+  default     = "rg-robm-tf-state"
+}
+
+variable "tfstate_storage_account_name" {
+  type        = string
+  description = "Terraform state storage account name"
+  default     = "robmtfstate"
+}
+
+variable "tfstate_container_name" {
+  type        = string
+  description = "Terraform state container name"
+  default     = "tfstate"
+}
+
+variable "key_hub" {
+  type        = string
+  description = "State key for hub connectivity deployment"
+  default     = "platform/connectivity.tfstate"
+}
+
+############################################
+# VPN Gateway configuration
+############################################
+
+variable "vpn_gateway_name" {
+  type        = string
+  description = "VPN Gateway name"
+  default     = "vpngw-hub-ne"
+}
+
+variable "public_ip_name" {
+  type        = string
+  description = "Public IP name for VPN Gateway"
+  default     = "pip-vpngw-hub-ne"
+}
+
+variable "vpn_sku" {
+  type        = string
+  description = "VPN Gateway SKU (e.g., VpnGw1, VpnGw2, VpnGw1AZ, VpnGw2AZ)"
+  default     = "VpnGw1AZ"
+}
+
+variable "enable_active_active" {
+  type        = bool
+  description = "Enable Active-Active (requires multiple public IPs and supported SKU)"
+  default     = false
+}
+
+variable "enable_bgp" {
+  type        = bool
+  description = "Enable BGP"
+  default     = false
+}
+
+variable "bgp_asn" {
+  type        = number
+  description = "BGP ASN (only used if enable_bgp = true)"
+  default     = 65515
+}
+
+variable "bgp_peering_address" {
+  type        = string
+  description = "BGP peering address (optional; Azure can auto-assign in some designs)"
+  default     = null
+}
