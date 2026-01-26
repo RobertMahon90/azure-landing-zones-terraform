@@ -1,0 +1,193 @@
+
+name: Terraform ALZ Deploy (Multi-Subscription)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "GitHub Environment to use (e.g., eir-business-dev)"
+        required: true
+        default: "eir-business-dev"
+        type: string
+      target:
+        description: "Terraform root to run (maps to backend-config/<target>.hcl)"
+        required: true
+        type: choice
+        options:
+          - tenant
+          - connectivity
+          - connectivity-gateway
+          - connectivity-peerings
+          - identity
+          - identity-routes
+          - management
+          - management-routes
+          - security
+          - security-routes
+          - lz-nonprod
+          - lz-nonprod-routes
+          - lz-prod
+          - lz-prod-routes
+      action:
+        description: "plan or apply"
+        required: true
+        default: plan
+        type: choice
+        options: [plan, apply]
+
+permissions:
+  contents: read
+  id-token: write  # Required for GitHub OIDC -> Azure token exchange [3](https://docs.github.com/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)[1](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    env:
+      TF_VERSION: "1.8.0"
+      TF_IN_AUTOMATION: "true"
+      TF_INPUT: "false"
+      AZURE_CORE_OUTPUT: "none"
+
+      # Environment-scoped variables (from GitHub Environment)
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+
+      SUB_CONNECTIVITY: ${{ vars.SUB_CONNECTIVITY }}
+      SUB_IDENTITY:     ${{ vars.SUB_IDENTITY }}
+      SUB_SECURITY:     ${{ vars.SUB_SECURITY }}
+      SUB_MANAGEMENT:   ${{ vars.SUB_MANAGEMENT }}
+      SUB_PROD:         ${{ vars.SUB_PROD }}
+      SUB_NONPROD:      ${{ vars.SUB_NONPROD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # OIDC login (no client secret) [2](https://github.com/marketplace/actions/azure-login)[1](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)[3](https://docs.github.com/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      # Install Terraform CLI on the runner [4](https://github.com/hashicorp/setup-terraform)
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Resolve paths + subscription mapping
+        id: map
+        shell: bash
+        run: |
+          TARGET="${{ inputs.target }}"
+          BACKEND_FILE="${GITHUB_WORKSPACE}/backend-config/${TARGET}.hcl"
+
+          case "$TARGET" in
+            tenant)
+              WORKDIR="deployments/tenant"
+              SUB="${SUB_MANAGEMENT}"
+              ;;
+
+            connectivity)
+              WORKDIR="deployments/platform/connectivity"
+              SUB="${SUB_CONNECTIVITY}"
+              ;;
+            connectivity-gateway)
+              WORKDIR="deployments/platform/connectivity/gateway"
+              SUB="${SUB_CONNECTIVITY}"
+              ;;
+            connectivity-peerings)
+              WORKDIR="deployments/platform/connectivity/peerings"
+              SUB="${SUB_CONNECTIVITY}"
+              ;;
+
+            identity)
+              WORKDIR="deployments/platform/identity"
+              SUB="${SUB_IDENTITY}"
+              ;;
+            identity-routes)
+              WORKDIR="deployments/platform/identity/routes"
+              SUB="${SUB_IDENTITY}"
+              ;;
+
+            management)
+              WORKDIR="deployments/platform/management"
+              SUB="${SUB_MANAGEMENT}"
+              ;;
+            management-routes)
+              WORKDIR="deployments/platform/management/routes"
+              SUB="${SUB_MANAGEMENT}"
+              ;;
+
+            security)
+              WORKDIR="deployments/platform/security"
+              SUB="${SUB_SECURITY}"
+              ;;
+            security-routes)
+              WORKDIR="deployments/platform/security/routes"
+              SUB="${SUB_SECURITY}"
+              ;;
+
+            lz-prod)
+              WORKDIR="deployments/landingzones/lz-prod"
+              SUB="${SUB_PROD}"
+              ;;
+            lz-prod-routes)
+              WORKDIR="deployments/landingzones/lz-prod/routes"
+              SUB="${SUB_PROD}"
+              ;;
+
+            lz-nonprod)
+              WORKDIR="deployments/landingzones/lz-nonprod"
+              SUB="${SUB_NONPROD}"
+              ;;
+            lz-nonprod-routes)
+              WORKDIR="deployments/landingzones/lz-nonprod/routes"
+              SUB="${SUB_NONPROD}"
+              ;;
+
+            *)
+              echo "Unknown target: $TARGET"
+              exit 1
+              ;;
+          esac
+
+          if [ -z "$SUB" ] || [ "$SUB" = "xxxxx" ] || [[ "$SUB" =~ ^x+$ ]]; then
+            echo "Subscription mapping for '$TARGET' is empty/placeholder. Populate SUB_* variables in GitHub Environment."
+            exit 1
+          fi
+
+          echo "workdir=$WORKDIR" >> $GITHUB_OUTPUT
+          echo "backend_file=$BACKEND_FILE" >> $GITHUB_OUTPUT
+          echo "subscription=$SUB" >> $GITHUB_OUTPUT
+
+          echo "Target: $TARGET"
+          echo "Workdir: $WORKDIR"
+          echo "Backend: $BACKEND_FILE"
+          echo "Subscription: $SUB"
+
+      - name: Terraform Init (remote state)
+        working-directory: ${{ steps.map.outputs.workdir }}
+        shell: bash
+        run: |
+          terraform init -backend-config="${{ steps.map.outputs.backend_file }}"
+
+      - name: Terraform Validate
+        working-directory: ${{ steps.map.outputs.workdir }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        if: ${{ inputs.action == 'plan' }}
+        working-directory: ${{ steps.map.outputs.workdir }}
+        run: |
+          terraform plan -var "subscription_id=${{ steps.map.outputs.subscription }}"
+
+      - name: Terraform Apply
+        if: ${{ inputs.action == 'apply' }}
+        working-directory: ${{ steps.map.outputs.workdir }}
+        run: |
+          terraform apply -auto-approve -var "subscription_id=${{ steps.map.outputs.subscription }}"
