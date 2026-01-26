@@ -1,16 +1,15 @@
 
 variable "scope_id" {
-  description = "The scope (management group or subscription ID) where policies are assigned"
   type        = string
+  description = "Management Group resource ID where the policy assignments will be created."
 }
 
 variable "policy_assignments" {
-  description = "Map of policy or initiative assignments"
+  description = "Map of policy assignments to create at the Management Group scope."
   type = map(object({
+    display_name         = optional(string)
     policy_definition_id = string
-    display_name         = string
-    parameters           = optional(string, null) # jsonencode(...) string
-    enforcement_mode     = optional(string, "Default")
-    description          = optional(string, null)
+    parameters           = optional(string)
+    enforcement_mode     = optional(string) # Default / DoNotEnforce
   }))
 }
