@@ -37,7 +37,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write  # Required for GitHub OIDC -> Azure token exchange [3](https://docs.github.com/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)[1](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
+  id-token: write  # Required for GitHub OIDC token issuance [4](https://github.com/hashicorp/terraform/issues/34456)[5](https://stackoverflow.com/questions/78668805/authenticating-using-the-azure-cli-is-only-supported-as-a-user-not-a-service-pr)
 
 jobs:
   terraform:
@@ -50,7 +50,7 @@ jobs:
       TF_INPUT: "false"
       AZURE_CORE_OUTPUT: "none"
 
-      # Environment-scoped variables (from GitHub Environment)
+      # From GitHub Environment variables
       AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
 
@@ -61,23 +61,28 @@ jobs:
       SUB_PROD:         ${{ vars.SUB_PROD }}
       SUB_NONPROD:      ${{ vars.SUB_NONPROD }}
 
+      # IMPORTANT: Force Terraform AzureRM Provider to use OIDC (not Azure CLI user auth)
+      ARM_USE_OIDC: "true"
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # OIDC login (no client secret) [2](https://github.com/marketplace/actions/azure-login)[1](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)[3](https://docs.github.com/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)
       - name: Azure login (OIDC)
         uses: azure/login@v2
         with:
           client-id: ${{ env.AZURE_CLIENT_ID }}
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
+        # azure/login supports OIDC and is recommended for secretless auth [6](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli-service-principal?view=azure-cli-latest)[5](https://stackoverflow.com/questions/78668805/authenticating-using-the-azure-cli-is-only-supported-as-a-user-not-a-service-pr)
 
-      # Install Terraform CLI on the runner [4](https://github.com/hashicorp/setup-terraform)
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
+        # setup-terraform installs Terraform CLI on the runner [7](https://developer.hashicorp.com/terraform/language/backend/azurerm)
 
       - name: Resolve paths + subscription mapping
         id: map
@@ -173,8 +178,12 @@ jobs:
       - name: Terraform Init (remote state)
         working-directory: ${{ steps.map.outputs.workdir }}
         shell: bash
+        env:
+          # Ensure both backend + provider use the right subscription context
+          ARM_SUBSCRIPTION_ID: ${{ steps.map.outputs.subscription }}
         run: |
           terraform init -backend-config="${{ steps.map.outputs.backend_file }}"
+        # terraform init configures backend; safe to rerun [8](https://stackoverflow.com/questions/79683483/error-building-arm-config-authenticating-using-the-azure-cli-is-only-supported)[9](https://github.com/hashicorp/terraform-provider-azurerm/issues/16226)
 
       - name: Terraform Validate
         working-directory: ${{ steps.map.outputs.workdir }}
@@ -183,11 +192,25 @@ jobs:
       - name: Terraform Plan
         if: ${{ inputs.action == 'plan' }}
         working-directory: ${{ steps.map.outputs.workdir }}
+        shell: bash
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ steps.map.outputs.subscription }}
         run: |
-          terraform plan -var "subscription_id=${{ steps.map.outputs.subscription }}"
+          if [ "${{ inputs.target }}" = "tenant" ]; then
+            terraform plan
+          else
+            terraform plan -var "subscription_id=${{ steps.map.outputs.subscription }}"
+          fi
 
       - name: Terraform Apply
         if: ${{ inputs.action == 'apply' }}
         working-directory: ${{ steps.map.outputs.workdir }}
+        shell: bash
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ steps.map.outputs.subscription }}
         run: |
-          terraform apply -auto-approve -var "subscription_id=${{ steps.map.outputs.subscription }}"
+          if [ "${{ inputs.target }}" = "tenant" ]; then
+            terraform apply -auto-approve
+          else
+            terraform apply -auto-approve -var "subscription_id=${{ steps.map.outputs.subscription }}"
+          fi
