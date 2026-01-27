@@ -2,3 +2,4 @@
 storage_account_name = "alzdemotfstorne"
 container_name       = "alzdemotfcont"
 key                  = "tenant/management-groups.tfstate"
+use_azuread_auth     = true
