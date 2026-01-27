@@ -189,6 +189,7 @@ jobs:
         working-directory: ${{ steps.map.outputs.workdir }}
         run: terraform validate
 
+
       - name: Terraform Plan
         if: ${{ inputs.action == 'plan' }}
         working-directory: ${{ steps.map.outputs.workdir }}
@@ -197,9 +198,9 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ steps.map.outputs.subscription }}
         run: |
           if [ "${{ inputs.target }}" = "tenant" ]; then
-            terraform plan
+            terraform plan -var-file="terraform.tfvars"
           else
-            terraform plan -var "subscription_id=${{ steps.map.outputs.subscription }}"
+            terraform plan -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
           fi
 
       - name: Terraform Apply
@@ -210,7 +211,9 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ steps.map.outputs.subscription }}
         run: |
           if [ "${{ inputs.target }}" = "tenant" ]; then
-            terraform apply -auto-approve
+            terraform apply -auto-approve -var-file="terraform.tfvars"
           else
-            terraform apply -auto-approve -var "subscription_id=${{ steps.map.outputs.subscription }}"
+            terraform apply -auto-approve -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
           fi
+
+
