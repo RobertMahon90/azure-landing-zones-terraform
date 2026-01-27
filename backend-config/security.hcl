@@ -2,3 +2,5 @@
 storage_account_name = "alzdemotfstorne"
 container_name       = "alzdemotfcont"
 key                  = "platform/security.tfstate"
+use_azuread_auth = true
+

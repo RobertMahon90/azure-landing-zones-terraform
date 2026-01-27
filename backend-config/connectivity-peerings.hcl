@@ -2,3 +2,5 @@
 storage_account_name = "alzdemotfstorne"
 container_name       = "alzdemotfcont"
 key                  = "platform/connectivity-peerings.tfstate"
+use_azuread_auth = true
+
