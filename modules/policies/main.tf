@@ -3,7 +3,7 @@ locals {
   # Generate safe assignment names
   assignment_names = {
     for k, v in var.policy_assignments :
-    k => substr(replace(lower(k), "_", "-"), 0, 64)
+    k => substr(replace(lower(k), "_", "-"), 0, 24)
   }
 
   # Convert enforcement_mode -> enforce boolean
