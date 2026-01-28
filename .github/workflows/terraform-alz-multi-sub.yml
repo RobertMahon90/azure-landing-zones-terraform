@@ -37,7 +37,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write  # Required for GitHub OIDC token issuance [4](https://github.com/hashicorp/terraform/issues/34456)[5](https://stackoverflow.com/questions/78668805/authenticating-using-the-azure-cli-is-only-supported-as-a-user-not-a-service-pr)
+  id-token: write  # Required for GitHub OIDC -> Azure token exchange
 
 jobs:
   terraform:
@@ -61,7 +61,7 @@ jobs:
       SUB_PROD:         ${{ vars.SUB_PROD }}
       SUB_NONPROD:      ${{ vars.SUB_NONPROD }}
 
-      # IMPORTANT: Force Terraform AzureRM Provider to use OIDC (not Azure CLI user auth)
+      # Force Terraform AzureRM Provider to use OIDC (not Azure CLI user auth)
       ARM_USE_OIDC: "true"
       ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
       ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
@@ -76,13 +76,11 @@ jobs:
           client-id: ${{ env.AZURE_CLIENT_ID }}
           tenant-id: ${{ env.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
-        # azure/login supports OIDC and is recommended for secretless auth [6](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli-service-principal?view=azure-cli-latest)[5](https://stackoverflow.com/questions/78668805/authenticating-using-the-azure-cli-is-only-supported-as-a-user-not-a-service-pr)
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
-        # setup-terraform installs Terraform CLI on the runner [7](https://developer.hashicorp.com/terraform/language/backend/azurerm)
 
       - name: Resolve paths + subscription mapping
         id: map
@@ -175,20 +173,30 @@ jobs:
           echo "Backend: $BACKEND_FILE"
           echo "Subscription: $SUB"
 
+      - name: Detect terraform.tfvars
+        id: tfvars
+        working-directory: ${{ steps.map.outputs.workdir }}
+        shell: bash
+        run: |
+          if [ -f "terraform.tfvars" ]; then
+            echo "has_tfvars=true" >> $GITHUB_OUTPUT
+            echo "Found terraform.tfvars in $(pwd)"
+          else
+            echo "has_tfvars=false" >> $GITHUB_OUTPUT
+            echo "No terraform.tfvars in $(pwd); proceeding without -var-file"
+          fi
+
       - name: Terraform Init (remote state)
         working-directory: ${{ steps.map.outputs.workdir }}
         shell: bash
         env:
-          # Ensure both backend + provider use the right subscription context
           ARM_SUBSCRIPTION_ID: ${{ steps.map.outputs.subscription }}
         run: |
           terraform init -backend-config="${{ steps.map.outputs.backend_file }}"
-        # terraform init configures backend; safe to rerun [8](https://stackoverflow.com/questions/79683483/error-building-arm-config-authenticating-using-the-azure-cli-is-only-supported)[9](https://github.com/hashicorp/terraform-provider-azurerm/issues/16226)
 
       - name: Terraform Validate
         working-directory: ${{ steps.map.outputs.workdir }}
         run: terraform validate
-
 
       - name: Terraform Plan
         if: ${{ inputs.action == 'plan' }}
@@ -197,10 +205,18 @@ jobs:
         env:
           ARM_SUBSCRIPTION_ID: ${{ steps.map.outputs.subscription }}
         run: |
-          if [ "${{ inputs.target }}" = "tenant" ]; then
-            terraform plan -var-file="terraform.tfvars"
+          if [ "${{ steps.tfvars.outputs.has_tfvars }}" = "true" ]; then
+            if [ "${{ inputs.target }}" = "tenant" ]; then
+              terraform plan -var-file="terraform.tfvars"
+            else
+              terraform plan -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
+            fi
           else
-            terraform plan -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
+            if [ "${{ inputs.target }}" = "tenant" ]; then
+              terraform plan
+            else
+              terraform plan -var "subscription_id=${{ steps.map.outputs.subscription }}"
+            fi
           fi
 
       - name: Terraform Apply
@@ -210,10 +226,16 @@ jobs:
         env:
           ARM_SUBSCRIPTION_ID: ${{ steps.map.outputs.subscription }}
         run: |
-          if [ "${{ inputs.target }}" = "tenant" ]; then
-            terraform apply -auto-approve -var-file="terraform.tfvars"
+          if [ "${{ steps.tfvars.outputs.has_tfvars }}" = "true" ]; then
+            if [ "${{ inputs.target }}" = "tenant" ]; then
+              terraform apply -auto-approve -var-file="terraform.tfvars"
+            else
+              terraform apply -auto-approve -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
+            fi
           else
-            terraform apply -auto-approve -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
+            if [ "${{ inputs.target }}" = "tenant" ]; then
+              terraform apply -auto-approve
+            else
+              terraform apply -auto-approve -var "subscription_id=${{ steps.map.outputs.subscription }}"
+            fi
           fi
-
-
