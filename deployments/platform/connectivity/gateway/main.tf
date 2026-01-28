@@ -55,6 +55,7 @@ resource "azurerm_public_ip" "vpngw" {
 
 resource "azurerm_virtual_network_gateway" "vpngw" {
   name                = var.vpn_gateway_name
+  depends_on          = [azurerm_public_ip.vpngw]
   resource_group_name = local.hub_rg
   location            = local.hub_location
 
