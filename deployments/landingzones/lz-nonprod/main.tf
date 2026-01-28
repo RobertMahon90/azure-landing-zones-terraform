@@ -14,10 +14,17 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
+# Create the Resource Group first
+  resource "azurerm_resource_group" "nonprod_rg" {
+  name     = var.resource_group_name
+  location = var.location              
+  tags     = var.tags
+}
+
 module "nonprod_spoke_vnet" {
   source              = "../../../modules/networking/vnet"
   name                = "vnet-nprod-spk-ne"
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.nonprod_rg.name
   location            = var.location
   address_space       = ["10.105.0.0/24"]
 
