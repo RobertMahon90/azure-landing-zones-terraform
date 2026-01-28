@@ -20,6 +20,7 @@ variable "tags" {
   default     = {}
 }
 
+
 ############################################
 # Remote state backend (hub connectivity layer)
 ############################################
@@ -27,26 +28,27 @@ variable "tags" {
 variable "tfstate_resource_group_name" {
   type        = string
   description = "Resource group containing the Terraform state storage account"
-  default     = "rg-robm-tf-state"
+  default     = "rg-alzdemo-tf-ne"
 }
 
 variable "tfstate_storage_account_name" {
   type        = string
   description = "Terraform state storage account name"
-  default     = "robmtfstate"
+  default     = "alzdemotfstorne"
 }
 
 variable "tfstate_container_name" {
   type        = string
   description = "Terraform state container name"
-  default     = "tfstate"
+  default     = "alzdemotfcont"
 }
 
 variable "key_hub" {
   type        = string
-  description = "State key for hub connectivity deployment"
+  description = "State key for hub connectivity deployment (the upstream you read from)"
   default     = "platform/connectivity.tfstate"
 }
+
 
 ############################################
 # VPN Gateway configuration
