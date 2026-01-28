@@ -14,6 +14,15 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
+
+# Create the RG first
+resource "azurerm_resource_group" "hub_rg" {
+  name     = var.resource_group_name
+  location = var.location
+  tags     = var.tags
+}
+
+
 module "hub_vnet" {
   source              = "../../../modules/networking/vnet"
   name                = "vnet-hub-ne"
