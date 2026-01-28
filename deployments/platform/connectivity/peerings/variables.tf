@@ -33,6 +33,7 @@ variable "sub_lz_nonprod" {
   description = "Non-prod landing zone subscription ID"
 }
 
+
 ############################################
 # Remote state backend location (override in pipelines if needed)
 ############################################
@@ -40,20 +41,21 @@ variable "sub_lz_nonprod" {
 variable "tfstate_resource_group_name" {
   type        = string
   description = "Resource group containing the Terraform state storage account"
-  default     = "rg-robm-tf-state"
+  default     = "rg-alzdemo-tf-ne"
 }
 
 variable "tfstate_storage_account_name" {
   type        = string
   description = "Terraform state storage account name"
-  default     = "robmtfstate"
+  default     = "alzdemotfstorne"
 }
 
 variable "tfstate_container_name" {
   type        = string
   description = "Terraform state container name"
-  default     = "tfstate"
+  default     = "alzdemotfcont"
 }
+
 
 ############################################
 # State keys (must match backend.tf keys in each layer)

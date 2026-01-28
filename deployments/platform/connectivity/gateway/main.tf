@@ -58,6 +58,12 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
   depends_on          = [azurerm_public_ip.vpngw]
   resource_group_name = local.hub_rg
   location            = local.hub_location
+  
+  timeouts {
+    create = "2h"
+    update = "2h"
+    delete = "2h"
+  }
 
   type     = "Vpn"
   vpn_type = "RouteBased"
