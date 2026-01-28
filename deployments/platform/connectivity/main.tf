@@ -26,7 +26,7 @@ resource "azurerm_resource_group" "hub_rg" {
 module "hub_vnet" {
   source              = "../../../modules/networking/vnet"
   name                = "vnet-hub-ne"
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.hub_rg.name
   location            = var.location
   address_space       = ["10.100.0.0/22"]
 
