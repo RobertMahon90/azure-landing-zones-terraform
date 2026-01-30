@@ -1,4 +1,3 @@
-
 terraform {
   required_version = ">= 1.6"
   required_providers {
@@ -35,7 +34,7 @@ locals {
 }
 
 ############################################
-# Public IP for VPN Gateway
+# Public IP for VPN Gateway (Zonal)
 ############################################
 
 resource "azurerm_public_ip" "vpngw" {
@@ -43,14 +42,16 @@ resource "azurerm_public_ip" "vpngw" {
   resource_group_name = local.hub_rg
   location            = local.hub_location
 
-  allocation_method = "Static"
-  sku               = "Standard"
+  allocation_method       = "Static"
+  sku                     = "Standard"
+  # For AZ Gateway SKUs, the PIP must be zonal:
+  zones                   = ["1", "2", "3"]
 
   tags = var.tags
 }
 
 ############################################
-# VPN Gateway
+# VPN Gateway (Zonal, single instance)
 ############################################
 
 resource "azurerm_virtual_network_gateway" "vpngw" {
@@ -58,19 +59,20 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
   depends_on          = [azurerm_public_ip.vpngw]
   resource_group_name = local.hub_rg
   location            = local.hub_location
-  
+
   timeouts {
     create = "2h"
     update = "2h"
     delete = "2h"
   }
 
-  type     = "Vpn"
-  vpn_type = "RouteBased"
-  sku      = var.vpn_sku
+  type                = "Vpn"
+  vpn_type            = "RouteBased"
+  sku                 = var.vpn_sku
 
-  active_active = var.enable_active_active
-  enable_bgp    = var.enable_bgp
+  # Single-instance, not Active/Active
+  active_active       = false
+  enable_bgp          = var.enable_bgp
 
   ip_configuration {
     name                          = "vnetGatewayConfig"
