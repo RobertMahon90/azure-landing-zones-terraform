@@ -28,32 +28,33 @@ variable "bgp_route_propagation_enabled" {
 variable "hub_next_hop_ip" {
   type        = string
   description = "Private IP of hub firewall/NVA used for forced tunneling"
+  default = "10.100.0.4"
 }
 
 # Remote state backend (spoke VNet deployment)
 variable "tfstate_resource_group_name" {
   type        = string
   description = "Terraform state resource group"
-  default     = "rg-robm-tf-state"
+  default     = "rg-alzdemo-tf-ne"
 }
 
 variable "tfstate_storage_account_name" {
   type        = string
   description = "Terraform state storage account"
-  default     = "robmtfstate"
+  default     = "alzdemotfstorne"
 }
 
 variable "tfstate_container_name" {
   type        = string
   description = "Terraform state container"
-  default     = "tfstate"
+  default     = "alzdemotfcont"
 }
 
 # State key for this spoke VNet deployment
 variable "key_spoke_vnet" {
   type        = string
   description = "State key for identity VNet deployment"
-  default     = "platform/identity.tfstate"
+  default     = "platform/identity-routes.tfstate"
 }
 
 # Naming
