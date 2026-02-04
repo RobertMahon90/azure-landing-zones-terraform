@@ -54,7 +54,7 @@ variable "tfstate_container_name" {
 variable "key_spoke_vnet" {
   type        = string
   description = "State key for identity VNet deployment"
-  default     = "platform/identity-routes.tfstate"
+  default     = "platform/identity.tfstate"
 }
 
 # Naming
