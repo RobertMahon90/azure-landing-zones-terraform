@@ -63,5 +63,5 @@ variable "allow_gateway_transit" {
 variable "use_remote_gateways" {
   type        = bool
   description = "Enable remote gateway usage on the spoke peering"
-  default     = true
+  default     = false
 }
