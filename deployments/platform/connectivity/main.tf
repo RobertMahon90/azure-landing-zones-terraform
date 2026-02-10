@@ -1,4 +1,3 @@
-
 terraform {
   required_version = ">= 1.6"
   required_providers {
@@ -22,6 +21,12 @@ resource "azurerm_resource_group" "hub_rg" {
   tags     = var.tags
 }
 
+resource "azurerm_network_watcher" "hub_nw" {
+  name                = var.network_watcher_name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.hub_rg.name
+  tags                = var.tags
+}
 
 module "hub_vnet" {
   source              = "../../../modules/networking/vnet"
