@@ -14,7 +14,7 @@ provider "azurerm" {
 }
 
 # Create the Resource Group first
-  resource "azurerm_resource_group" "identity_rg" {
+resource "azurerm_resource_group" "identity_rg" {
   name     = var.resource_group_name
   location = var.location              
   tags     = var.tags
