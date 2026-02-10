@@ -27,6 +27,22 @@ resource "azurerm_network_watcher" "nonprod_nw" {
   tags                = var.tags
 }
 
+resource "azurerm_network_security_group" "nonprod_nsg" {
+  for_each = module.nonprod_spoke_vnet.subnet_ids
+
+  name                = "nsg-${each.key}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.nonprod_rg.name
+  tags                = var.tags
+}
+
+resource "azurerm_subnet_network_security_group_association" "nonprod_nsg_assoc" {
+  for_each = module.nonprod_spoke_vnet.subnet_ids
+
+  subnet_id                 = each.value
+  network_security_group_id = azurerm_network_security_group.nonprod_nsg[each.key].id
+}
+
 module "nonprod_spoke_vnet" {
   source              = "../../../modules/networking/vnet"
   name                = "vnet-nprod-spk-ne"
