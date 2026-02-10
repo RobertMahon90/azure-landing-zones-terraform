@@ -1,4 +1,3 @@
-
 variable "subscription_id" {
   type        = string
   description = "Prod landing zone subscription ID (injected by pipeline later)"
@@ -20,4 +19,10 @@ variable "tags" {
   type        = map(string)
   default     = {}
   description = "Common tags"
+}
+
+variable "network_watcher_name" {
+  description = "Name of the Network Watcher"
+  type        = string
+  default     = "nw-prd-lz-ne"
 }

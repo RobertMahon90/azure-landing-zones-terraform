@@ -1,4 +1,3 @@
-
 terraform {
   required_version = ">= 1.6"
   required_providers {
@@ -14,11 +13,17 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
-# Create the Resource Group first
-  resource "azurerm_resource_group" "security_rg" {
+resource "azurerm_resource_group" "security_rg" {
   name     = var.resource_group_name
   location = var.location              
   tags     = var.tags
+}
+
+resource "azurerm_network_watcher" "security_nw" {
+  name                = var.network_watcher_name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.security_rg.name
+  tags                = var.tags
 }
 
 module "security_spoke_vnet" {

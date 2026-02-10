@@ -1,4 +1,3 @@
-
 terraform {
   required_version = ">= 1.6"
   required_providers {
@@ -19,6 +18,13 @@ provider "azurerm" {
   name     = var.resource_group_name
   location = var.location              
   tags     = var.tags
+}
+
+resource "azurerm_network_watcher" "prod_nw" {
+  name                = var.network_watcher_name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.prod_rg.name
+  tags                = var.tags
 }
 
 module "prod_spoke_vnet" {
