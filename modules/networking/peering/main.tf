@@ -36,5 +36,6 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
 
   allow_virtual_network_access = var.allow_virtual_network_access
   allow_forwarded_traffic      = var.allow_forwarded_traffic
+  allow_gateway_transit        = false
   use_remote_gateways          = var.use_remote_gateways
 }
