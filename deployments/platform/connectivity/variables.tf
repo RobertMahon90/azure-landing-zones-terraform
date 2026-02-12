@@ -26,25 +26,3 @@ variable "network_watcher_name" {
   type        = string
   default     = "nw-hub-connectivity-ne"
 }
-
-variable "deploy_bastion" {
-  type        = bool
-  description = "Deploy Azure Bastion host to the hub VNet"
-  default     = false
-}
-
-variable "bastion_name" {
-  type        = string
-  description = "Name of the Bastion host"
-  default     = "bastion-hub-ne"
-}
-
-variable "bastion_sku" {
-  type        = string
-  description = "SKU for the Bastion host (Basic or Standard)"
-  default     = "Basic"
-  validation {
-    condition     = contains(["Basic", "Standard"], var.bastion_sku)
-    error_message = "Bastion SKU must be either 'Basic' or 'Standard'."
-  }
-}

@@ -43,14 +43,3 @@ module "hub_vnet" {
 
   tags = var.tags
 }
-
-module "hub_bastion" {
-  source              = "../../../modules/networking/bastion"
-  enabled             = var.deploy_bastion
-  name                = var.bastion_name
-  location            = var.location
-  resource_group_name = azurerm_resource_group.hub_rg.name
-  subnet_id           = module.hub_vnet.subnet_ids["AzureBastionSubnet"]
-  sku                 = var.bastion_sku
-  tags                = var.tags
-}
