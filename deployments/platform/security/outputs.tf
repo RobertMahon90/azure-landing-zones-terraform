@@ -23,18 +23,3 @@ output "subnet_ids" {
   description = "Map of security spoke subnet IDs keyed by subnet name"
   value       = module.security_spoke_vnet.subnet_ids
 }
-
-output "law_sec_id" {
-  description = "Security Log Analytics workspace resource ID"
-  value       = azurerm_log_analytics_workspace.law_sec.id
-}
-
-output "law_sec_name" {
-  description = "Security Log Analytics workspace name"
-  value       = azurerm_log_analytics_workspace.law_sec.name
-}
-
-output "law_sec_workspace_id" {
-  description = "Security Log Analytics workspace ID (for agent configuration)"
-  value       = azurerm_log_analytics_workspace.law_sec.workspace_id
-}

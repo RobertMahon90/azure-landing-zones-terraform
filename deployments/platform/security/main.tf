@@ -19,12 +19,6 @@ resource "azurerm_resource_group" "security_rg" {
   tags     = var.tags
 }
 
-resource "azurerm_resource_group" "security_mon_rg" {
-  name     = var.mon_resource_group_name
-  location = var.location
-  tags     = var.tags
-}
-
 resource "azurerm_network_watcher" "security_nw" {
   name                = var.network_watcher_name
   location            = var.location
@@ -58,16 +52,6 @@ module "security_spoke_vnet" {
   subnets = {
     snet-sec-ne = { address_prefixes = ["10.103.0.0/26"] }
   }
-
-  tags = var.tags
-}
-
-resource "azurerm_log_analytics_workspace" "law_sec" {
-  name                = var.law_sec_name
-  location            = var.location
-  resource_group_name = azurerm_resource_group.security_mon_rg.name
-  sku                 = var.law_sku
-  retention_in_days   = var.law_retention_days
 
   tags = var.tags
 }
