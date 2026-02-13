@@ -17,6 +17,7 @@ on:
           - tenant
           - connectivity
           - connectivity-bastion
+          - connectivity-firewall
           - connectivity-gateway
           - connectivity-peerings
           - identity
@@ -104,6 +105,10 @@ jobs:
               WORKDIR="deployments/platform/connectivity/bastion"
               SUB="${SUB_CONNECTIVITY}"
               ;;
+            connectivity-firewall)
+              WORKDIR="deployments/platform/connectivity/firewall"
+              SUB="${SUB_CONNECTIVITY}"
+              ;;
             connectivity-gateway)
               WORKDIR="deployments/platform/connectivity/gateway"
               SUB="${SUB_CONNECTIVITY}"
@@ -185,7 +190,7 @@ jobs:
         run: |
           TARGET="${{ inputs.target }}"
           case "$TARGET" in
-            connectivity-bastion|connectivity-gateway|connectivity-peerings|identity-routes|management-routes|security-routes|lz-nonprod-routes|lz-prod-routes)
+            connectivity-bastion|connectivity-firewall|connectivity-gateway|connectivity-peerings|identity-routes|management-routes|security-routes|lz-nonprod-routes|lz-prod-routes)
               # These read remote state from storage in Management
               echo "arm_sub=${{ env.SUB_MANAGEMENT }}" >> $GITHUB_OUTPUT
               ;;
