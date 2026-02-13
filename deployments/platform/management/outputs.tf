@@ -23,3 +23,18 @@ output "subnet_ids" {
   description = "Map of management spoke subnet IDs keyed by subnet name"
   value       = module.management_spoke_vnet.subnet_ids
 }
+
+output "law_mgmt_id" {
+  description = "Management Log Analytics workspace resource ID"
+  value       = azurerm_log_analytics_workspace.law_mgmt.id
+}
+
+output "law_mgmt_name" {
+  description = "Management Log Analytics workspace name"
+  value       = azurerm_log_analytics_workspace.law_mgmt.name
+}
+
+output "law_mgmt_workspace_id" {
+  description = "Management Log Analytics workspace ID (for agent configuration)"
+  value       = azurerm_log_analytics_workspace.law_mgmt.workspace_id
+}

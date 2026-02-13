@@ -19,6 +19,12 @@ resource "azurerm_resource_group" "management_rg" {
   tags     = var.tags
 }
 
+resource "azurerm_resource_group" "management_mon_rg" {
+  name     = var.mon_resource_group_name
+  location = var.location
+  tags     = var.tags
+}
+
 resource "azurerm_network_watcher" "management_nw" {
   name                = var.network_watcher_name
   location            = var.location
@@ -52,6 +58,16 @@ module "management_spoke_vnet" {
   subnets = {
     snet-mgmt-ne = { address_prefixes = ["10.102.0.0/26"] }
   }
+
+  tags = var.tags
+}
+
+resource "azurerm_log_analytics_workspace" "law_mgmt" {
+  name                = var.law_mgmt_name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.management_mon_rg.name
+  sku                 = var.law_sku
+  retention_in_days   = var.law_retention_days
 
   tags = var.tags
 }
