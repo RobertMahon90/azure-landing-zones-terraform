@@ -1,4 +1,5 @@
-resource_group_name  = "alz-state-rg"
-storage_account_name = "alzstatestg"
-container_name       = "tfstate"
+resource_group_name  = "rg-alzdemo-tf-ne"
+storage_account_name = "alzdemotfstorne"
+container_name       = "alzdemotfcont"
 key                  = "platform/management-monitoring.tfstate"
+use_azuread_auth = true
