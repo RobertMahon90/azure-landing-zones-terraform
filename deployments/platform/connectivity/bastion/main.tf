@@ -13,6 +13,15 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
+module "alz_tags" {
+  source           = "../../../../modules/tags_alz"
+  tier             = var.tier
+  rg_service       = "Azure Networking - Bastion"
+  resource_service = "Bastion"
+  built_date       = var.built_date
+  created_by       = var.created_by
+}
+
 ############################################
 # Read Hub outputs from connectivity layer state
 ############################################
@@ -45,5 +54,5 @@ module "hub_bastion" {
   resource_group_name = local.hub_rg
   subnet_id           = local.bastion_subnet_id
   sku                 = var.bastion_sku
-  tags                = var.tags
+  tags                = module.alz_tags.resource_tags
 }

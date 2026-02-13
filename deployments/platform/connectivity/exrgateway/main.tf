@@ -13,6 +13,15 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
+module "alz_tags" {
+  source           = "../../../../modules/tags_alz"
+  tier             = var.tier
+  rg_service       = "Azure Networking - ExpressRoute"
+  resource_service = "ExpressRoute Gateway"
+  built_date       = var.built_date
+  created_by       = var.created_by
+}
+
 ############################################
 # Read Hub outputs from connectivity layer state
 ############################################
@@ -45,5 +54,5 @@ module "hub_expressroute_gateway" {
   subnet_id        = local.gateway_subnet_id
   public_ip_name   = var.public_ip_name
   sku              = var.exr_sku
-  tags             = var.tags
+  tags                = module.alz_tags.resource_tags
 }

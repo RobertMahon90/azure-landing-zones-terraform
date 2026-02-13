@@ -17,7 +17,7 @@ variable "resource_group_name" {
 
 variable "tags" {
   type        = map(string)
-  description = "Common tags"
+  description = "Additional custom tags (merged with ALZ tags)"
   default     = {}
 }
 
@@ -25,4 +25,27 @@ variable "network_watcher_name" {
   description = "Name of the Network Watcher"
   type        = string
   default     = "nw-sec-ne"
+}
+
+variable "tier" {
+  type        = string
+  description = "Deployment tier (Prod, Non-Prod, Dev)"
+  default     = "Prod"
+
+  validation {
+    condition     = contains(["Prod", "Non-Prod", "Dev"], var.tier)
+    error_message = "Tier must be 'Prod', 'Non-Prod', or 'Dev'."
+  }
+}
+
+variable "built_date" {
+  type        = string
+  description = "Date resources were built (ISO 8601 format: YYYY-MM-DD)"
+  default     = "2026-02-13"
+}
+
+variable "created_by" {
+  type        = string
+  description = "Organization/team that created the resources"
+  default     = "eir business"
 }

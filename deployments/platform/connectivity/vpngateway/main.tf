@@ -13,6 +13,15 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
+module "alz_tags" {
+  source           = "../../../../modules/tags_alz"
+  tier             = var.tier
+  rg_service       = "Azure Networking - VPN"
+  resource_service = "VPN Gateway"
+  built_date       = var.built_date
+  created_by       = var.created_by
+}
+
 ############################################
 # Read Hub outputs from connectivity layer state
 ############################################
@@ -49,5 +58,5 @@ module "hub_vpn_gateway" {
   enable_bgp       = var.enable_bgp
   bgp_asn          = var.bgp_asn
   bgp_peering_address = var.bgp_peering_address
-  tags             = var.tags
+  tags             = module.alz_tags.resource_tags
 }

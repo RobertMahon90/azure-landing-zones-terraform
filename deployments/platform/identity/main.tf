@@ -13,18 +13,27 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
+module "alz_tags" {
+  source           = "../../../modules/tags_alz"
+  tier             = var.tier
+  rg_service       = "Azure Networking - Identity"
+  resource_service = "Virtual Network"
+  built_date       = var.built_date
+  created_by       = var.created_by
+}
+
 # Create the Resource Group first
 resource "azurerm_resource_group" "identity_rg" {
   name     = var.resource_group_name
   location = var.location              
-  tags     = var.tags
+  tags     = module.alz_tags.rg_tags
 }
 
 resource "azurerm_network_watcher" "identity_nw" {
   name                = var.network_watcher_name
   location            = var.location
   resource_group_name = azurerm_resource_group.identity_rg.name
-  tags                = var.tags
+  tags                = module.alz_tags.resource_tags
 }
 
 resource "azurerm_network_security_group" "identity_nsg" {
@@ -33,7 +42,7 @@ resource "azurerm_network_security_group" "identity_nsg" {
   name                = "nsg-${each.key}"
   location            = var.location
   resource_group_name = azurerm_resource_group.identity_rg.name
-  tags                = var.tags
+  tags                = module.alz_tags.resource_tags
 }
 
 resource "azurerm_subnet_network_security_group_association" "identity_nsg_assoc" {
@@ -54,5 +63,5 @@ module "identity_spoke_vnet" {
     snet-adds-ne = { address_prefixes = ["10.101.0.0/26"] }
   }
 
-  tags = var.tags
+  tags = module.alz_tags.resource_tags
 }

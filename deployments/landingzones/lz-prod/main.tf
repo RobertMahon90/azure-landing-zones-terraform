@@ -13,18 +13,27 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
+module "alz_tags" {
+  source           = "../../../modules/tags_alz"
+  tier             = var.tier
+  rg_service       = "Azure Networking - Production"
+  resource_service = "Virtual Network"
+  built_date       = var.built_date
+  created_by       = var.created_by
+}
+
 # Create the Resource Group first
   resource "azurerm_resource_group" "prod_rg" {
   name     = var.resource_group_name
   location = var.location              
-  tags     = var.tags
+  tags     = module.alz_tags.rg_tags
 }
 
 resource "azurerm_network_watcher" "prod_nw" {
   name                = var.network_watcher_name
   location            = var.location
   resource_group_name = azurerm_resource_group.prod_rg.name
-  tags                = var.tags
+  tags                = module.alz_tags.resource_tags
 }
 
 resource "azurerm_network_security_group" "prod_nsg" {
@@ -33,7 +42,7 @@ resource "azurerm_network_security_group" "prod_nsg" {
   name                = "nsg-${each.key}"
   location            = var.location
   resource_group_name = azurerm_resource_group.prod_rg.name
-  tags                = var.tags
+  tags                = module.alz_tags.resource_tags
 }
 
 resource "azurerm_subnet_network_security_group_association" "prod_nsg_assoc" {
@@ -54,5 +63,5 @@ module "prod_spoke_vnet" {
     snet-prd-ne = { address_prefixes = ["10.104.0.0/26"] }
   }
 
-  tags = var.tags
+  tags = module.alz_tags.resource_tags
 }
