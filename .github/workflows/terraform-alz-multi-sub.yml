@@ -191,11 +191,11 @@ jobs:
       # NEW: pick the subscription used to access the state store
       - name: Select ARM subscription for state access
         id: stateSub
-            connectivity-bastion|connectivity-firewall|connectivity-vpngateway|connectivity-exrgateway|connectivity-peerings|identity-routes|management-routes|security-routes|lz-nonprod-routes|lz-prod-routes)
+        shell: bash
         run: |
           TARGET="${{ inputs.target }}"
           case "$TARGET" in
-            connectivity-bastion|connectivity-firewall|connectivity-gateway|connectivity-peerings|identity-routes|management-routes|security-routes|lz-nonprod-routes|lz-prod-routes)
+            connectivity-bastion|connectivity-firewall|connectivity-vpngateway|connectivity-exrgateway|connectivity-peerings|identity-routes|management-routes|security-routes|lz-nonprod-routes|lz-prod-routes)
               # These read remote state from storage in Management
               echo "arm_sub=${{ env.SUB_MANAGEMENT }}" >> $GITHUB_OUTPUT
               ;;
