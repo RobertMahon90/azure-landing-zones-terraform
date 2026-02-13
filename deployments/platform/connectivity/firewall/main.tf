@@ -41,6 +41,7 @@ module "hub_firewall" {
   source              = "../../../../modules/networking/firewall"
   enabled             = var.deploy_firewall
   name                = var.firewall_name
+  firewall_policy_name = var.firewall_policy_name
   location            = local.hub_location
   resource_group_name = local.hub_rg
   subnet_id           = local.firewall_subnet_id

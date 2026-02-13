@@ -22,3 +22,13 @@ output "firewall_public_ip_address" {
   description = "Public IP address of the Azure Firewall"
   value       = module.hub_firewall.public_ip_address
 }
+
+output "firewall_policy_id" {
+  description = "Resource ID of the Azure Firewall Policy"
+  value       = module.hub_firewall.firewall_policy_id
+}
+
+output "firewall_policy_name" {
+  description = "Name of the Azure Firewall Policy"
+  value       = module.hub_firewall.firewall_policy_name
+}

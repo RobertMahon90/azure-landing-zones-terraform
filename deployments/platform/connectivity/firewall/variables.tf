@@ -27,6 +27,12 @@ variable "firewall_name" {
   default     = "azfw-hub-ne"
 }
 
+variable "firewall_policy_name" {
+  type        = string
+  description = "Name of the Firewall Policy"
+  default     = "azfw-hub-policy-ne"
+}
+
 variable "firewall_sku_tier" {
   type        = string
   description = "SKU tier for the Firewall (Standard, Premium)"

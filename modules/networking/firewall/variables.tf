@@ -9,6 +9,11 @@ variable "name" {
   description = "Name of the Azure Firewall"
 }
 
+variable "firewall_policy_name" {
+  type        = string
+  description = "Name of the Azure Firewall Policy"
+}
+
 variable "location" {
   type        = string
   description = "Azure region"
