@@ -18,7 +18,8 @@ on:
           - connectivity
           - connectivity-bastion
           - connectivity-firewall
-          - connectivity-gateway
+          - connectivity-vpngateway
+          - connectivity-exrgateway
           - connectivity-peerings
           - identity
           - identity-routes
@@ -109,8 +110,12 @@ jobs:
               WORKDIR="deployments/platform/connectivity/firewall"
               SUB="${SUB_CONNECTIVITY}"
               ;;
-            connectivity-gateway)
-              WORKDIR="deployments/platform/connectivity/gateway"
+            connectivity-vpngateway)
+              WORKDIR="deployments/platform/connectivity/vpngateway"
+              SUB="${SUB_CONNECTIVITY}"
+              ;;
+            connectivity-exrgateway)
+              WORKDIR="deployments/platform/connectivity/exrgateway"
               SUB="${SUB_CONNECTIVITY}"
               ;;
             connectivity-peerings)
@@ -186,7 +191,7 @@ jobs:
       # NEW: pick the subscription used to access the state store
       - name: Select ARM subscription for state access
         id: stateSub
-        shell: bash
+            connectivity-bastion|connectivity-firewall|connectivity-vpngateway|connectivity-exrgateway|connectivity-peerings|identity-routes|management-routes|security-routes|lz-nonprod-routes|lz-prod-routes)
         run: |
           TARGET="${{ inputs.target }}"
           case "$TARGET" in
