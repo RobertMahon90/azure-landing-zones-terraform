@@ -24,8 +24,10 @@ on:
           - identity
           - identity-routes
           - management
+          - management-monitoring
           - management-routes
           - security
+          - security-monitoring
           - security-routes
           - lz-nonprod
           - lz-nonprod-routes
@@ -136,6 +138,10 @@ jobs:
               WORKDIR="deployments/platform/management"
               SUB="${SUB_MANAGEMENT}"
               ;;
+            management-monitoring)
+              WORKDIR="deployments/platform/management/monitoring"
+              SUB="${SUB_MANAGEMENT}"
+              ;;
             management-routes)
               WORKDIR="deployments/platform/management/routes"
               SUB="${SUB_MANAGEMENT}"
@@ -143,6 +149,10 @@ jobs:
 
             security)
               WORKDIR="deployments/platform/security"
+              SUB="${SUB_SECURITY}"
+              ;;
+            security-monitoring)
+              WORKDIR="deployments/platform/security/monitoring"
               SUB="${SUB_SECURITY}"
               ;;
             security-routes)
@@ -195,7 +205,7 @@ jobs:
         run: |
           TARGET="${{ inputs.target }}"
           case "$TARGET" in
-            connectivity-bastion|connectivity-firewall|connectivity-vpngateway|connectivity-exrgateway|connectivity-peerings|identity-routes|management-routes|security-routes|lz-nonprod-routes|lz-prod-routes)
+            connectivity-bastion|connectivity-firewall|connectivity-vpngateway|connectivity-exrgateway|connectivity-peerings|identity-routes|management-routes|management-monitoring|security-monitoring|security-routes|lz-nonprod-routes|lz-prod-routes)
               # These read remote state from storage in Management
               echo "arm_sub=${{ env.SUB_MANAGEMENT }}" >> $GITHUB_OUTPUT
               ;;
