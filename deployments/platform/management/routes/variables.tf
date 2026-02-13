@@ -16,6 +16,29 @@ variable "tags" {
   default     = {}
 }
 
+variable "tier" {
+  type        = string
+  description = "Deployment tier (Prod, Non-Prod, Dev)"
+  default     = "Prod"
+
+  validation {
+    condition     = contains(["Prod", "Non-Prod", "Dev"], var.tier)
+    error_message = "Tier must be 'Prod', 'Non-Prod', or 'Dev'."
+  }
+}
+
+variable "built_date" {
+  type        = string
+  description = "Date resources were built (ISO 8601 format: YYYY-MM-DD)"
+  default     = "2026-02-13"
+}
+
+variable "created_by" {
+  type        = string
+  description = "Organization/team that created the resources"
+  default     = "eir business"
+}
+
 
 variable "bgp_route_propagation_enabled" {
   type        = bool
