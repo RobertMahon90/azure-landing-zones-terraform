@@ -65,10 +65,10 @@ variable "public_ip_name" {
 
 variable "exr_sku" {
   type        = string
-  description = "ExpressRoute Gateway SKU (Standard, HighPerformance, UltraPerformance)"
-  default     = "Standard"
+  description = "ExpressRoute Gateway SKU (ERGw1Az, ERGw2Az, ERGw3Az)"
+  default     = "ERGw1Az"
   validation {
-    condition     = contains(["Standard", "HighPerformance", "UltraPerformance"], var.exr_sku)
-    error_message = "ExpressRoute SKU must be either 'Standard', 'HighPerformance', or 'UltraPerformance'."
+    condition     = contains(["ERGw1Az", "ERGw2Az", "ERGw3Az"], var.exr_sku)
+    error_message = "ExpressRoute SKU must be either 'ERGw1Az', 'ERGw2Az', or 'ERGw3Az'."
   }
 }
