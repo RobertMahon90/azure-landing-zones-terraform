@@ -22,6 +22,11 @@ module "alz_tags" {
   created_by       = var.created_by
 }
 
+locals {
+  nsg_tags             = merge(module.alz_tags.resource_tags, { Service = "Network Security Group" })
+  network_watcher_tags = merge(module.alz_tags.resource_tags, { Service = "Network Watcher" })
+}
+
 resource "azurerm_resource_group" "security_rg" {
   name     = var.resource_group_name
   location = var.location              
@@ -32,7 +37,7 @@ resource "azurerm_network_watcher" "security_nw" {
   name                = var.network_watcher_name
   location            = var.location
   resource_group_name = azurerm_resource_group.security_rg.name
-  tags                = module.alz_tags.resource_tags
+  tags                = local.network_watcher_tags
 }
 
 resource "azurerm_network_security_group" "security_nsg" {
@@ -41,7 +46,7 @@ resource "azurerm_network_security_group" "security_nsg" {
   name                = "nsg-${each.key}"
   location            = var.location
   resource_group_name = azurerm_resource_group.security_rg.name
-  tags                = module.alz_tags.resource_tags
+  tags                = local.nsg_tags
 }
 
 resource "azurerm_subnet_network_security_group_association" "security_nsg_assoc" {
