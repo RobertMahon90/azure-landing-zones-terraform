@@ -53,46 +53,28 @@ Tenant Root Group
 ## Hub-and-Spoke Network Architecture
 
 **Core Design:**
-- Hub VNet (10.100.0.0/22) provides centralized connectivity and security services
+- Hub VNet provides centralized connectivity and security services
 - Spoke VNets (Identity, Management, Security, Prod, Non-Prod) host workloads
 - All spokes peered to hub with gateway transit enabled
 - Spoke-to-spoke traffic flows through hub for centralized inspection
 - Independent Terraform state files per deployment layer
 
 ```
-                            ┌──────────────────────────────────┐
-                            │    Azure Firewall               │
-                            │   (Standard/Premium)            │
-                            └────────────┬─────────────────────┘
-                                         │
-                    ┌────────────────────┼─────────────────────┐
-                    │                    │                     │
-            ┌───────▼──────┐    ┌────────▼────────┐    ┌──────▼────────┐
-            │  VPN Gateway │    │ ExpressRoute    │    │   Bastion     │
-            │ (Optional)   │    │  Gateway        │    │  (Optional)   │
-            │              │    │  (Optional)     │    │  (Basic/Std)  │
-            └──────────────┘    └─────────────────┘    └───────────────┘
-
-                        HUB VNET (10.100.0.0/22)
-                       │        Connectivity          │
-                ─────────────────────────────────────
-                 + AzureFirewallSubnet
-                 + GatewaySubnet
-                 + AzureBastionSubnet
-
-                  │           │            │
-                  │ Peering   │ Peering   │ Peering
-                  ▼           ▼            ▼
-
-          ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-          │  Identity    │  │ Management   │  │  Security    │
-          │  10.101/24   │  │ 10.102/24    │  │ 10.103/24    │
-          └──────────────┘  └──────────────┘  └──────────────┘
-
-                  ┌─────────────────────────────┐
-                  │ Prod & Non-Prod Landing     │
-                  │ Zones (Workload Spokes)     │
-                  └─────────────────────────────┘
+                                  +-------------------------------+
+                                  |            HUB VNET           |
+                                  |          10.100.0.0/22        |
+                                  +-------------------------------+
+                                  | Azure Firewall (Std/Prem)     |
+                                  | Gateway (VPN/ER - optional)   |
+                                  | Bastion (optional)            |
+                                  +---------------+---------------+
+                                                  |
+                                    VNet Peering (Hub <-> Spokes)
+                                                  |
++-----------------+  +-----------------+  +-----------------+  +-----------------+ +-----------------+ 
+|  Identity VNET  |  |    MGMT VNET    |  |  Security VNET  |  |    Prod VNET    | |  Non-Prod VNET  |
+|  10.101.0.0/24  |  |  10.102.0.0/24  |  |  10.103.0.0/24  |  |  10.104.0.0/24  | |  10.105.0.0/24  |
++-----------------+  +-----------------+  +-----------------+  +-----------------+ +-----------------+
 ```
 
 ## Deployment Layers (7 Independent State Files)
@@ -100,10 +82,10 @@ Tenant Root Group
 | Layer | Location | Purpose |
 |-------|----------|---------|
 | Hub Network | `platform/connectivity/` | Core VNet + subnets |
-| Bastion | `platform/connectivity/bastion/` | Secure shell (optional) |
-| Firewall | `platform/connectivity/firewall/` | Network inspection + policy |
-| VPN Gateway | `platform/connectivity/vpngateway/` | Hybrid site-to-site |
-| ExpressRoute Gateway | `platform/connectivity/exrgateway/` | Private circuit connectivity |
+| Bastion | `platform/connectivity/bastion/` | Secure RDP (optional) |
+| Firewall | `platform/connectivity/firewall/` | Network inspection + policy (Optional) |
+| VPN Gateway | `platform/connectivity/vpngateway/` | Hybrid site-to-site (Optional)|
+| ExpressRoute Gateway | `platform/connectivity/exrgateway/` | Private circuit connectivity (Optional) |
 | Peerings | `platform/connectivity/peerings/` | Hub-to-spoke relationships |
 | Routes | `platform/connectivity/routes/` | Route tables & UDRs |
 
@@ -252,11 +234,11 @@ Hub VNet: 10.100.0.0/22
 - GatewaySubnet: 10.100.1.0/27
 - AzureBastionSubnet: 10.100.1.32/27
 
-Identity Spoke: 10.101.0.0/24
-Management Spoke: 10.102.0.0/24
-Security Spoke: 10.103.0.0/24
-Prod Landing Zone: 10.200.0.0/22
-Non-Prod Landing Zone: 10.201.0.0/22
+- Identity Spoke: 10.101.0.0/24
+- Management Spoke: 10.102.0.0/24
+- Security Spoke: 10.103.0.0/24
+- Prod Landing Zone: 10.200.0.0/22
+- Non-Prod Landing Zone: 10.201.0.0/22
 
 ## Troubleshooting
 
