@@ -66,4 +66,4 @@ module "management_spoke_vnet" {
   }
 
   tags = module.alz_tags.resource_tags
-}}
+}
