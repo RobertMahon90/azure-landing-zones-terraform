@@ -200,12 +200,30 @@ module "firewall" {
 ```
 
 ## Documentation
-- [Platform Layer Overview](deployments/platform/README.md)
-- [Landing Zone Layer Overview](deployments/landingzones/README.md)
-- [Networking Modules](modules/networking/README.md)
-- [Backend Configuration](backend-config/README.md)
-- [Module Details](modules/networking/[module]/README.md)
-- [Deployment Guides](deployments/platform/connectivity/[layer]/README.md)
+ [Platform Layer Overview](deployments/platform/README.md)
+ [Landing Zone Layer Overview](deployments/landingzones/README.md)
+ [Networking Modules](modules/networking/README.md)
+ [Backend Configuration](backend-config/README.md)
+
+ Module Details:
+
+ - [bastion module](modules/networking/bastion/README.md)
+ - [firewall module](modules/networking/firewall/README.md)
+ - [vpn-gateway module](modules/networking/vpn-gateway/README.md)
+ - [expressroute-gateway module](modules/networking/expressroute-gateway/README.md)
+ - [vnet module](modules/networking/vnet/README.md)
+ - [peering module](modules/networking/peering/README.md)
+ - [udr module](modules/networking/udr/README.md)
+
+ Deployment Guides:
+
+ - [connectivity](deployments/platform/connectivity/README.md)
+ - [connectivity/bastion](deployments/platform/connectivity/bastion/README.md)
+ - [connectivity/firewall](deployments/platform/connectivity/firewall/README.md)
+ - [connectivity/vpngateway](deployments/platform/connectivity/vpngateway/README.md)
+ - [connectivity/exrgateway](deployments/platform/connectivity/exrgateway/README.md)
+ - [connectivity/peerings](deployments/platform/connectivity/peerings/README.md)
+ - [connectivity/routes](deployments/platform/connectivity/routes/README.md)
 
 ## Configuration
 
