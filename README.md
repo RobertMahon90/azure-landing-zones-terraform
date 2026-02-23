@@ -200,10 +200,10 @@ module "firewall" {
 ```
 
 ## Documentation
- [Platform Layer Overview](deployments/platform/README.md)
- [Landing Zone Layer Overview](deployments/landingzones/README.md)
- [Networking Modules](modules/networking/README.md)
- [Backend Configuration](backend-config/README.md)
+ - [Platform Layer Overview](deployments/platform/README.md)
+ - [Landing Zone Layer Overview](deployments/landingzones/README.md)
+ - [Networking Modules](modules/networking/README.md)
+ - [Backend Configuration](backend-config/README.md)
 
  Module Details:
 
