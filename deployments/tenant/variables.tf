@@ -60,3 +60,42 @@ variable "def_nic_no_public_ip" {
   type        = string
   description = "Policy Definition ID for 'Network interfaces should not have public IPs'"
 }
+
+############################################
+# Compliance Standards (Policy Sets)
+############################################
+
+variable "deploy_cis_benchmark" {
+  type        = bool
+  description = "Deploy CIS Microsoft Azure Foundations Benchmark v2.0.0"
+  default     = true
+}
+
+variable "cis_benchmark_policy_set_id" {
+  type        = string
+  description = "Policy Set Definition ID for CIS Microsoft Azure Foundations Benchmark v2.0.0"
+  default     = "/providers/Microsoft.Authorization/policySetDefinitions/06f19060-9e68-4070-92ca-f15cc126059e"
+}
+
+variable "deploy_mcsb_benchmark" {
+  type        = bool
+  description = "Deploy Microsoft Cloud Security Benchmark v2"
+  default     = true
+}
+
+variable "mcsb_benchmark_policy_set_id" {
+  type        = string
+  description = "Policy Set Definition ID for Microsoft Cloud Security Benchmark v2"
+  default     = "/providers/Microsoft.Authorization/policySetDefinitions/e3ec7e09-768c-4b64-882c-fcada3772047"
+}
+
+variable "compliance_enforcement_mode" {
+  type        = string
+  description = "Enforcement mode for compliance policies: 'Default' (enforce) or 'DoNotEnforce' (audit-only)"
+  default     = "Default"
+  
+  validation {
+    condition     = contains(["Default", "DoNotEnforce"], var.compliance_enforcement_mode)
+    error_message = "Enforcement mode must be 'Default' or 'DoNotEnforce'."
+  }
+}

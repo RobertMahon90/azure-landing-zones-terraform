@@ -6,3 +6,8 @@ def_allowed_vm_skus            = "/providers/Microsoft.Authorization/policyDefin
 def_not_allowed_resource_types = "/providers/Microsoft.Authorization/policyDefinitions/6c112d4e-5bc7-47ae-a041-ea2d9dccd749"
 def_nic_no_public_ip           = "/providers/Microsoft.Authorization/policyDefinitions/83a86a26-fd1f-447c-b59d-e51f44264114"
 
+# Compliance Standards
+deploy_cis_benchmark           = true
+deploy_mcsb_benchmark          = true
+compliance_enforcement_mode    = "Default"
+
