@@ -66,9 +66,9 @@ deploy_cis_benchmark = true
 compliance_enforcement_mode = "Default"
 ```
 
-### Microsoft Cloud Security Benchmark v2
+### Microsoft Cloud Security Benchmark v1
 
-**ID:** `e3ec7e09-768c-4b64-882c-fcada3772047`
+**ID:** `1f3afdf9-d0c9-4c3d-847f-89da613e70a8`
 
 **Coverage:**
 - Network Security

@@ -79,14 +79,14 @@ variable "cis_benchmark_policy_set_id" {
 
 variable "deploy_mcsb_benchmark" {
   type        = bool
-  description = "Deploy Microsoft Cloud Security Benchmark v2"
+  description = "Deploy Microsoft Cloud Security Benchmark v1"
   default     = true
 }
 
 variable "mcsb_benchmark_policy_set_id" {
   type        = string
-  description = "Policy Set Definition ID for Microsoft Cloud Security Benchmark v2"
-  default     = "/providers/Microsoft.Authorization/policySetDefinitions/e3ec7e09-768c-4b64-882c-fcada3772047"
+  description = "Policy Set Definition ID for Microsoft Cloud Security Benchmark v1"
+  default     = "/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"
 }
 
 variable "compliance_enforcement_mode" {

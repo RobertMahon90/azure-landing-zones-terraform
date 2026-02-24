@@ -56,7 +56,7 @@ locals {
     } : {},
     var.deploy_mcsb_benchmark ? {
       mcsb_benchmark = {
-        display_name         = "Microsoft Cloud Security Benchmark v2 (AlzDemo)"
+        display_name         = "Microsoft Cloud Security Benchmark v1 (AlzDemo)"
         policy_definition_id = var.mcsb_benchmark_policy_set_id
         enforcement_mode     = var.compliance_enforcement_mode
       }
