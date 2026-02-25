@@ -25,7 +25,7 @@ resource "azurerm_monitor_action_group" "service_health" {
 
 # Deploy service health alert rule via ARM template
 resource "azurerm_resource_group_template_deployment" "service_health_alert" {
-  name                = "${var.alert_rule_name}-deployment"
+  name                = replace(lower("${var.alert_rule_name}-deployment"), " ", "-")
   resource_group_name = var.resource_group_name
   deployment_mode     = "Incremental"
 
