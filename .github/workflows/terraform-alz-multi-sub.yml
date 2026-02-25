@@ -258,19 +258,22 @@ jobs:
               -var "sub_security=${{ env.SUB_SECURITY }}" \
               -var "sub_lz_prod=${{ env.SUB_PROD }}" \
               -var "sub_lz_nonprod=${{ env.SUB_NONPROD }}"
+          elif [ "${{ inputs.target }}" = "tenant" ]; then
+            # Tenant needs all subscription IDs for service health alerts across all subscriptions
+            TFVARS_OPT=""
+            if [ "${{ steps.tfvars.outputs.has_tfvars }}" = "true" ]; then TFVARS_OPT='-var-file="terraform.tfvars"'; fi
+            terraform plan $TFVARS_OPT \
+              -var "subscription_id_management=${{ env.SUB_MANAGEMENT }}" \
+              -var "subscription_id_security=${{ env.SUB_SECURITY }}" \
+              -var "subscription_id_connectivity=${{ env.SUB_CONNECTIVITY }}" \
+              -var "subscription_id_identity=${{ env.SUB_IDENTITY }}" \
+              -var "subscription_id_lz_prod=${{ env.SUB_PROD }}" \
+              -var "subscription_id_lz_nonprod=${{ env.SUB_NONPROD }}"
           else
             if [ "${{ steps.tfvars.outputs.has_tfvars }}" = "true" ]; then
-              if [ "${{ inputs.target }}" = "tenant" ]; then
-                terraform plan -var-file="terraform.tfvars"
-              else
-                terraform plan -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
-              fi
+              terraform plan -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
             else
-              if [ "${{ inputs.target }}" = "tenant" ]; then
-                terraform plan
-              else
-                terraform plan -var "subscription_id=${{ steps.map.outputs.subscription }}"
-              fi
+              terraform plan -var "subscription_id=${{ steps.map.outputs.subscription }}"
             fi
           fi
 
@@ -291,18 +294,21 @@ jobs:
               -var "sub_security=${{ env.SUB_SECURITY }}" \
               -var "sub_lz_prod=${{ env.SUB_PROD }}" \
               -var "sub_lz_nonprod=${{ env.SUB_NONPROD }}"
+          elif [ "${{ inputs.target }}" = "tenant" ]; then
+            # Tenant needs all subscription IDs for service health alerts across all subscriptions
+            TFVARS_OPT=""
+            if [ "${{ steps.tfvars.outputs.has_tfvars }}" = "true" ]; then TFVARS_OPT='-var-file="terraform.tfvars"'; fi
+            terraform apply -auto-approve $TFVARS_OPT \
+              -var "subscription_id_management=${{ env.SUB_MANAGEMENT }}" \
+              -var "subscription_id_security=${{ env.SUB_SECURITY }}" \
+              -var "subscription_id_connectivity=${{ env.SUB_CONNECTIVITY }}" \
+              -var "subscription_id_identity=${{ env.SUB_IDENTITY }}" \
+              -var "subscription_id_lz_prod=${{ env.SUB_PROD }}" \
+              -var "subscription_id_lz_nonprod=${{ env.SUB_NONPROD }}"
           else
             if [ "${{ steps.tfvars.outputs.has_tfvars }}" = "true" ]; then
-              if [ "${{ inputs.target }}" = "tenant" ]; then
-                terraform apply -auto-approve -var-file="terraform.tfvars"
-              else
-                terraform apply -auto-approve -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
-              fi
+              terraform apply -auto-approve -var-file="terraform.tfvars" -var "subscription_id=${{ steps.map.outputs.subscription }}"
             else
-              if [ "${{ inputs.target }}" = "tenant" ]; then
-                terraform apply -auto-approve
-              else
-                terraform apply -auto-approve -var "subscription_id=${{ steps.map.outputs.subscription }}"
-              fi
+              terraform apply -auto-approve -var "subscription_id=${{ steps.map.outputs.subscription }}"
             fi
           fi

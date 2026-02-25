@@ -12,14 +12,10 @@ deploy_mcsb_benchmark          = true
 compliance_enforcement_mode    = "Default"
 
 # Service Health Alerts
-alert_email                = "robert.mahon@eirbusiness.ie"
-alert_built_date           = "2026-02-25"
-alert_created_by           = "eir business"
+alert_email      = "robert.mahon@eirbusiness.ie"
+alert_built_date = "2026-02-25"
+alert_created_by = "eir business"
 
-# Subscription IDs for each tier (update with actual values)
-subscription_id_management   = "REPLACE_WITH_MGMT_SUB_ID"
-subscription_id_security     = "REPLACE_WITH_SEC_SUB_ID"
-subscription_id_connectivity = "REPLACE_WITH_CONN_SUB_ID"
-subscription_id_identity     = "REPLACE_WITH_ID_SUB_ID"
-subscription_id_lz_prod      = "REPLACE_WITH_PROD_SUB_ID"
-subscription_id_lz_nonprod   = "REPLACE_WITH_NONPROD_SUB_ID"
+# Subscription IDs are passed via environment variables (TF_VAR_subscription_id_*)
+# set in GitHub workflows or locally before running terraform
+
