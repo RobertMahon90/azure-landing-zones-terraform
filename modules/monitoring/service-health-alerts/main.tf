@@ -23,26 +23,44 @@ resource "azurerm_monitor_action_group" "service_health" {
   tags = var.tags
 }
 
-# Create service health alert rule
-resource "azurerm_monitor_service_health_alert_rule" "this" {
-  name                = var.alert_rule_name
+# Deploy service health alert rule via ARM template
+resource "azurerm_resource_group_template_deployment" "service_health_alert" {
+  name                = "${var.alert_rule_name}-deployment"
   resource_group_name = var.resource_group_name
-  scopes              = ["/subscriptions/${var.subscription_id}"]
-  description         = "Service Health alerts for ${var.alert_tier} - All services, regions (North Europe, West Europe, Global), and event types"
-  enabled             = true
+  deployment_mode     = "Incremental"
 
-  action {
-    action_group_id = azurerm_monitor_action_group.service_health.id
-  }
+  template_content = jsonencode({
+    schema          = "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#"
+    contentVersion  = "1.0.0.0"
+    parameters      = {}
+    variables       = {}
+    resources = [
+      {
+        type       = "Microsoft.ServiceHealth/alerts"
+        apiVersion = "2023-06-01-preview"
+        name       = var.alert_rule_name
+        location   = "global"
+        properties = {
+          description = "Service Health alerts for ${var.alert_tier}"
+          actions = {
+            actionGroups = [
+              {
+                actionGroupId = azurerm_monitor_action_group.service_health.id
+              }
+            ]
+          }
+          scopes = ["/subscriptions/${var.subscription_id}"]
+          criteria = {
+            alertScope   = "All"
+            alertType    = "All"
+            occurrenceType = "All"
+          }
+        }
+        tags = var.tags
+      }
+    ]
+  })
 
-  # All services
-  services = ["Global"]
-
-  # All regions: North Europe, West Europe, Global
-  locations = ["Global", "North Europe", "West Europe"]
-
-  # All event types
-  events = ["Incident", "Maintenance", "Informational", "ActionRequired"]
-
-  tags = var.tags
+  depends_on = [azurerm_monitor_action_group.service_health]
 }
+

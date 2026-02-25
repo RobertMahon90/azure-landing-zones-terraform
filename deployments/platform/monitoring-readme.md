@@ -17,11 +17,11 @@ All service health alerts are configured with the following scope:
 
 | Parameter | Value |
 |-----------|-------|
-| **Services** | Global (all services) |
-| **Regions** | North Europe, West Europe, Global |
-| **Event Types** | Incident, Maintenance, Informational, ActionRequired |
+| **Services** | All (Global scope) |
+| **Regions** | Global |
+| **Event Types** | All (Incident, Maintenance, Informational, ActionRequired) |
 
-This ensures comprehensive coverage of all Azure services across the regions relevant to your ALZ deployment.
+This configuration monitors all Azure services across all regions.
 
 ### Notification Setup
 
@@ -142,9 +142,12 @@ tags = {
 
 Location: `modules/monitoring/service-health-alerts/`
 
-Encapsulates:
-- Azure Monitor Action Group for email notifications
-- Azure Monitor Service Health Alert Rule with preconfigured scope, regions, and event types
+Uses an **ARM template deployment** approach because service health alerts aren't directly supported as native Terraform resources. The module encapsulates:
+
+- **Azure Monitor Action Group** (native Terraform resource) - Email receivers
+- **Service Health Alert Rule** (via ARM template) - Alert configuration for all services, regions, and event types
+
+This hybrid approach combines Terraform's native support for action groups with ARM template deployment for service health alerts, resulting in a streamlined and maintainable solution.
 
 #### Module Inputs
 
@@ -162,9 +165,9 @@ Encapsulates:
 
 | Output | Description |
 |--------|---|
-| action_group_id | Service health action group ID |
+| action_group_id | Service health action group resource ID |
 | action_group_name | Service health action group name |
-| alert_rule_id | Service health alert rule ID |
+| alert_deployment_id | Service health alert ARM template deployment ID |
 | alert_rule_name | Service health alert rule name |
 
 ## Best Practices

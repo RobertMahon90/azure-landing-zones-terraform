@@ -8,12 +8,12 @@ output "action_group_name" {
   description = "Name of the service health action group"
 }
 
-output "alert_rule_id" {
-  value       = azurerm_monitor_service_health_alert_rule.this.id
-  description = "ID of the service health alert rule"
+output "alert_deployment_id" {
+  value       = azurerm_resource_group_template_deployment.service_health_alert.id
+  description = "ID of the service health alert rule ARM template deployment"
 }
 
 output "alert_rule_name" {
-  value       = azurerm_monitor_service_health_alert_rule.this.name
+  value       = var.alert_rule_name
   description = "Name of the service health alert rule"
 }

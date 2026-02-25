@@ -1,2 +1,0 @@
-# Connectivity monitoring outputs (placeholder)
-
