@@ -1,6 +1,6 @@
 variable "subscription_id" {
   type        = string
-  description = "Security subscription ID (injected by pipeline later)"
+  description = "Identity subscription ID"
 }
 
 variable "location" {
@@ -11,14 +11,14 @@ variable "location" {
 
 variable "resource_group_name" {
   type        = string
-  description = "Resource group for security monitoring resources"
-  default     = "rg-mon-sec-ne"
+  description = "Resource group for identity monitoring resources"
+  default     = "rg-mon-id-ne"
 }
 
 variable "law_name" {
   type        = string
   description = "Log Analytics workspace name"
-  default     = "law-sec-ne"
+  default     = "law-id-ne"
 }
 
 variable "law_sku" {
@@ -62,3 +62,8 @@ variable "created_by" {
   default     = "eir business"
 }
 
+variable "alert_email" {
+  type        = string
+  description = "Email address for service health alert notifications"
+  sensitive   = true
+}

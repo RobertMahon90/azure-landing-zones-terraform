@@ -28,3 +28,4 @@ output "law_primary_shared_key" {
   value       = azurerm_log_analytics_workspace.law_mgmt.primary_shared_key
   sensitive   = true
 }
+

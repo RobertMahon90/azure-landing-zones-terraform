@@ -37,3 +37,4 @@ resource "azurerm_log_analytics_workspace" "law_sec" {
 
   tags = module.alz_tags.resource_tags
 }
+

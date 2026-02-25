@@ -99,3 +99,55 @@ variable "compliance_enforcement_mode" {
     error_message = "Enforcement mode must be 'Default' or 'DoNotEnforce'."
   }
 }
+
+############################################
+# Service Health Alerts inputs
+############################################
+
+variable "alert_email" {
+  type        = string
+  description = "Email address for service health alert notifications"
+  sensitive   = true
+}
+
+variable "alert_built_date" {
+  type        = string
+  description = "Date service health alerts were deployed (ISO 8601 format: YYYY-MM-DD)"
+  default     = "2026-02-25"
+}
+
+variable "alert_created_by" {
+  type        = string
+  description = "Team/organization that created service health alerts"
+  default     = "eir business"
+}
+
+variable "subscription_id_management" {
+  type        = string
+  description = "Management subscription ID"
+}
+
+variable "subscription_id_security" {
+  type        = string
+  description = "Security subscription ID"
+}
+
+variable "subscription_id_connectivity" {
+  type        = string
+  description = "Connectivity subscription ID"
+}
+
+variable "subscription_id_identity" {
+  type        = string
+  description = "Identity subscription ID"
+}
+
+variable "subscription_id_lz_prod" {
+  type        = string
+  description = "Prod landing zone subscription ID"
+}
+
+variable "subscription_id_lz_nonprod" {
+  type        = string
+  description = "Non-Prod landing zone subscription ID"
+}
