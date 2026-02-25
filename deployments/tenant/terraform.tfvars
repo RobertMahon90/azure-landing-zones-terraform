@@ -11,12 +11,5 @@ deploy_cis_benchmark           = true
 deploy_mcsb_benchmark          = true
 compliance_enforcement_mode    = "Default"
 
-# Service Health Alerts Configuration
-alert_email      = "robert.mahon@eirbusiness.ie"
-alert_built_date = "2026-02-25"
-alert_created_by = "eir business"
-
-# Subscription IDs are ONLY passed via GitHub Actions workflow variables (TF_VAR_subscription_id_*)
-# Do NOT add them here - they come from the workflow -var flags for security
 
 
