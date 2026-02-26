@@ -7,9 +7,9 @@ def_not_allowed_resource_types = "/providers/Microsoft.Authorization/policyDefin
 def_nic_no_public_ip           = "/providers/Microsoft.Authorization/policyDefinitions/83a86a26-fd1f-447c-b59d-e51f44264114"
 
 # Compliance Standards
-deploy_cis_benchmark           = true
-deploy_mcsb_benchmark          = true
-compliance_enforcement_mode    = "Default"
+deploy_cis_benchmark        = true
+deploy_mcsb_benchmark       = true
+compliance_enforcement_mode = "Default"
 
 
 

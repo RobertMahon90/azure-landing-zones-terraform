@@ -61,6 +61,12 @@ variable "def_nic_no_public_ip" {
   description = "Policy Definition ID for 'Network interfaces should not have public IPs'"
 }
 
+variable "def_azure_backup" {
+  type        = string
+  description = "Policy Definition ID for 'Azure Backup should be enabled for Virtual Machines'"
+  default     = "/providers/Microsoft.Authorization/policyDefinitions/013e242c-8828-4970-87b3-ab247555486d"
+}
+
 ############################################
 # Compliance Standards (Policy Sets)
 ############################################
@@ -93,7 +99,7 @@ variable "compliance_enforcement_mode" {
   type        = string
   description = "Enforcement mode for compliance policies: 'Default' (enforce) or 'DoNotEnforce' (audit-only)"
   default     = "Default"
-  
+
   validation {
     condition     = contains(["Default", "DoNotEnforce"], var.compliance_enforcement_mode)
     error_message = "Enforcement mode must be 'Default' or 'DoNotEnforce'."

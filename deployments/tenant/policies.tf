@@ -46,6 +46,12 @@ locals {
         policy_definition_id = var.def_nic_no_public_ip
         enforcement_mode     = "Default"
       }
+
+      azure_backup = {
+        display_name         = "Azure Backup should be enabled for Virtual Machines (AlzDemo)"
+        policy_definition_id = var.def_azure_backup
+        enforcement_mode     = "Default"
+      }
     },
     var.deploy_cis_benchmark ? {
       cis_benchmark = {
@@ -65,7 +71,7 @@ locals {
 }
 
 module "alz_root_policies" {
-  source           = "../../modules/policies"
-  scope_id         = module.alz_root.id # AlzDemo MG
+  source             = "../../modules/policies"
+  scope_id           = module.alz_root.id # AlzDemo MG
   policy_assignments = local.policy_assignments
 }
